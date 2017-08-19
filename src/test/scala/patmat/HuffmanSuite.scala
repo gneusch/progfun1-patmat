@@ -91,6 +91,18 @@ class HuffmanSuite extends FunSuite {
     }
   }
 
+  test("decode and encode a slightly longer text should be identity") {
+    new TestTrees {
+      assert(decode(t2, encode(t2)("abd".toList)) === "abd".toList)
+    }
+  }
+
+  test("decode and encode a more longer text should be identity") {
+    new TestTrees {
+      val t3 = Fork(Fork(Fork(Leaf('e', 1), Leaf('t', 2), List('e','t'), 3), Leaf('z',3), List('e','t','z'), 6), Leaf('x',4), List('e','t','z','x'), 10)
+      assert(decode(t3, encode(t3)("etzxze".toList)) === "etzxze".toList)
+    }
+  }
 
 
 }
