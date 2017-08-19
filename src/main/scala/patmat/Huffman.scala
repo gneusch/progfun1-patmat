@@ -202,8 +202,30 @@ object Huffman {
   /**
    * This function decodes the bit sequence `bits` using the code tree `tree` and returns
    * the resulting list of characters.
+   * Given a sequence of bits to decode, we successively read the bits,
+   * and for each 0, we choose the left branch,
+   * and for each 1 we choose the right branch.
    */
-    def decode(tree: CodeTree, bits: List[Bit]): List[Char] = ???
+  def decode(tree: CodeTree, bits: List[Bit]): List[Char] = {
+    def helper(tree: CodeTree, bits: List[Bit]): (List[Bit], Char) = tree match {
+      case Leaf(char, _) => (bits, char)
+      case Fork(left, right, _, _) => {
+        if(bits.head == 0) helper(left, bits.tail)
+        else if(bits.head == 1) helper(right, bits.tail)
+        else throw new Error("Bits should be either 0 or 1, but we get: " + bits.head)
+      }
+    }
+    def decoder(tree: CodeTree, bits: List[Bit], chars: List[Char]): List[Char] = {
+      if(bits.isEmpty) {
+        chars
+      }
+      else {
+        val calcHelper = helper(tree, bits)
+        decoder(tree, calcHelper._1, chars :+ calcHelper._2)
+      }
+    }
+    decoder(tree, bits, List())
+  }
   
   /**
    * A Huffman coding tree for the French language.
@@ -221,7 +243,7 @@ object Huffman {
   /**
    * Write a function that returns the decoded secret
    */
-    def decodedSecret: List[Char] = ???
+  def decodedSecret: List[Char] = decode(frenchCode, secret)
   
 
   // Part 4a: Encoding using Huffman tree
@@ -270,6 +292,8 @@ object Huffman {
 
 object Main extends App {
 
-  println(Huffman.times(Huffman.string2Chars("Hello World, howdy you?")))
+  //println(Huffman.times(Huffman.string2Chars("Hello World, howdy you?")))
+  println(Huffman.decodedSecret.mkString)
+
 
 }
