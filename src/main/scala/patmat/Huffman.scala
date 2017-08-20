@@ -236,7 +236,7 @@ object Huffman {
 
   /**
    * What does the secret message say? Can you decode it?
-   * For the decoding use the `frenchCode' Huffman tree defined above.
+   * For the decoding use the `frenchCode` Huffman tree defined above.
    */
   val secret: List[Bit] = List(0,0,1,1,1,0,1,0,1,1,1,0,0,1,1,0,1,0,0,1,1,0,1,0,1,1,0,0,1,1,1,1,1,0,1,0,1,1,0,0,0,0,1,0,1,1,1,0,0,1,0,0,1,0,0,0,1,0,0,0,1,0,1)
 
@@ -258,7 +258,7 @@ object Huffman {
   def encode(tree: CodeTree)(text: List[Char]): List[Bit] = {
     def traverseTree(tree: CodeTree, charToFind: Char, bits: List[Bit]): List[Bit] = tree match {
       case Leaf(char, _) => char match {
-        case charToFind => bits
+        case `charToFind` => bits
       }
       case Fork(left, right, _, _) => {
        if(chars(right).contains(charToFind)) traverseTree(right, charToFind, bits :+ 1)
@@ -283,7 +283,13 @@ object Huffman {
    * This function returns the bit sequence that represents the character `char` in
    * the code table `table`.
    */
-    def codeBits(table: CodeTable)(char: Char): List[Bit] = ???
+  def codeBits(table: CodeTable)(char: Char): List[Bit] = table match {
+    case x :: xs => x._1 match {
+      case `char` => x._2
+      case _ => codeBits(xs)(char)
+    }
+    case Nil => throw new Error("Codetable does not contain char: " + char)
+  }
   
   /**
    * Given a code tree, create a code table which contains, for every character in the
@@ -314,7 +320,8 @@ object Huffman {
 object Main extends App {
 
   //println(Huffman.times(Huffman.string2Chars("Hello World, howdy you?")))
-  println(Huffman.decodedSecret.mkString)
+  //println(Huffman.decodedSecret.mkString)
+  println(Huffman.convert(Huffman.frenchCode))
 
 
 }
